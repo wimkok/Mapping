@@ -3,10 +3,16 @@
 <xsl:stylesheet version="2.0"
 xmlns:svrl="http://purl.oclc.org/dsdl/svrl"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+xmlns:fun="tools"
 xpath-default-namespace="urn:fdc:difi.no:2017:vefa:structure-1">
 
 <xsl:output method="text" indent="no" />
 <xsl:strip-space elements="*"/>
+
+<xsl:function name="fun:cardinality">
+    <xsl:param name="string1"/>
+    <xsl:value-of select="upper-case(replace($string1,'\.\.','-'))"/>
+  </xsl:function>
 
 <xsl:template match="/">
 	<!-- <xsl:text>Root Document </xsl:text><xsl:value-of select="//Document/Term/text()"/><xsl:text>&#xa;</xsl:text>
@@ -17,8 +23,8 @@ xpath-default-namespace="urn:fdc:difi.no:2017:vefa:structure-1">
 <xsl:template match="//Document">
 <xsl:text>Document;xPath;Element;Name;Cardinality;&#xa;</xsl:text>
 <xsl:apply-templates select="Element">
-      <xsl:with-param name="prev" select = "''" />
-	  <xsl:with-param name="document" select="Term/text()" />
+      <xsl:with-param name="prev" select = "replace(Term/text(),'ubl:','doc:')" />
+	  <xsl:with-param name="document" select="replace(Term/text(),'ubl:','doc:')" />
     </xsl:apply-templates>
 </xsl:template>
 
@@ -34,10 +40,10 @@ xpath-default-namespace="urn:fdc:difi.no:2017:vefa:structure-1">
 	<xsl:value-of select="Name/text()"/><xsl:text>;</xsl:text>
 	<xsl:text></xsl:text>
 	<xsl:if test="exists(@cardinality)">
-		<xsl:value-of select="@cardinality"/>
+		<xsl:value-of select="fun:cardinality(@cardinality)"/>
 	</xsl:if>
 	<xsl:if test="not(exists(@cardinality))">
-		<xsl:value-of select="'1..1'"/>
+		<xsl:value-of select="fun:cardinality('1..1')"/>
 	</xsl:if>
 	<xsl:text>;</xsl:text>
 	<xsl:text>&#xa;</xsl:text> 
@@ -56,7 +62,7 @@ xpath-default-namespace="urn:fdc:difi.no:2017:vefa:structure-1">
 	<xsl:param name = "document" />
 	<xsl:value-of select="$document"/><xsl:text>;</xsl:text>
 	<xsl:variable name="epath">
-		<xsl:value-of select="concat($prev,'@',Term/text())"  />
+		<xsl:value-of select="concat($prev,'/@',Term/text())"  />
 	</xsl:variable>
 	<xsl:value-of select="$epath"/><xsl:text>;</xsl:text>
 	<xsl:value-of select="Term/text()"/><xsl:text>;</xsl:text>
@@ -65,18 +71,18 @@ xpath-default-namespace="urn:fdc:difi.no:2017:vefa:structure-1">
 	<xsl:if test="exists(@usage)">
 		<xsl:choose>
 			<xsl:when test="contains(@usage,'opt')">
-				<xsl:value-of select="'0..1'"/>
+				<xsl:value-of select="fun:cardinality('0..1')"/>
 			</xsl:when>
 			<xsl:when test="contains(@usage,'man')">
-				<xsl:value-of select="'1..1'"/>
+				<xsl:value-of select="fun:cardinality('1..1')"/>
 			</xsl:when>
 			<xsl:otherwise>
-				<xsl:value-of select="'0..1'"/>
+				<xsl:value-of select="fun:cardinality('0..1')"/>
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:if>
 	<xsl:if test="not(exists(@usage))">
-		<xsl:value-of select="'1..1'"/>
+		<xsl:value-of select="fun:cardinality('1..1')"/>
 	</xsl:if>
 	<xsl:text>;</xsl:text>
 	<xsl:text>&#xa;</xsl:text> 
