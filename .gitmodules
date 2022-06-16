@@ -1,3 +1,6 @@
 [submodule "poacc-upgrade-3"]
 	path = poacc-upgrade-3
 	url = https://github.com/OpenPEPPOL/poacc-upgrade-3.git
+[submodule "peppol-bis-invoice-3"]
+	path = peppol-bis-invoice-3
+	url = https://github.com/OpenPEPPOL/peppol-bis-invoice-3.git
